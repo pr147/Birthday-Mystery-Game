@@ -43,6 +43,11 @@
             animation: pulse 2s ease-in-out infinite;
         }
 
+        .emoji {
+            -webkit-text-fill-color: initial; /* keep emoji color */
+            color: initial; /* fallback */
+        }
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.02); }
@@ -411,7 +416,9 @@
         </div>
 
         <div class="header">
-            <h1 class="title">🔪 The BookTok Killer 📚</h1>
+            <h1 class="title">
+              <span class="emoji">🔪📚</span> The BookTok Killer
+            </h1>
             <p class="subtitle" id="caseTitle">A Dark Romance Birthday Mystery</p>
         </div>
 
