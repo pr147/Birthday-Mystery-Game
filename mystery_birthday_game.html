@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The BookTok Killer - Birthday Mystery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a0d0d, #2d1b1b, #1a0d0d);
+            color: #f4f1e8;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .title {
+            font-size: 2.8em;
+            background: linear-gradient(45deg, #8B0000, #DC143C, #B22222);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(139,0,0,0.5);
+            margin-bottom: 10px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #cd5c5c;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .game-screen {
+            display: none;
+            background: rgba(0,0,0,0.6);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(139,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(220,20,60,0.3);
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .game-screen.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .story-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            text-align: justify;
+            color: #e8e1d0;
+        }
+
+        .psychological-profile {
+            background: linear-gradient(145deg, #4a0e0e, #5c1a1a);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #DC143C;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.4);
+        }
+
+        .profile-title {
+            color: #DC143C;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .suspects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin: 20px 0;
+        }
+
+        .suspect-card {
+            background: linear-gradient(145deg, #2d1414, #3d1a1a);
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .suspect-card:hover {
+            border-color: #DC143C;
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(220,20,60,0.4);
+        }
+
+        .suspect-card.selected {
+            border-color: #DC143C;
+            background: linear-gradient(145deg, #5c1a1a, #6d2020);
+            box-shadow: 0 0 25px rgba(220,20,60,0.6);
+        }
+
+        .suspect-name {
+            color: #DC143C;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+
+        .suspect-book {
+            color: #cd5c5c;
+            font-style: italic;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(145deg, #DC143C, #B22222);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 6px 18px rgba(220,20,60,0.3);
+        }
+
+        .btn:hover {
+            background: linear-gradient(145deg, #FF1E3C, #DC143C);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(220,20,60,0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: linear-gradient(145deg, #666, #444);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn.hint-btn {
+            background: linear-gradient(145deg, #8B4513, #654321);
+            font-size: 0.9em;
+            padding: 10px 20px;
+        }
+
+        .btn.hint-btn:hover {
+            background: linear-gradient(145deg, #A0522D, #8B4513);
+        }
+
+        .progress-bar {
+            background: rgba(0,0,0,0.4);
+            height: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #DC143C, #FF1E3C);
+            height: 100%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 15px rgba(220,20,60,0.6);
+        }
+
+        .evidence-item {
+            background: rgba(139,0,0,0.1);
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border-left: 4px solid #DC143C;
+            animation: fadeInLeft 0.5s ease-out;
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .psychology-quiz {
+            background: linear-gradient(145deg, #2d0a0a, #3d1212);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px solid #8B0000;
+        }
+
+        .cipher-puzzle {
+            background: linear-gradient(145deg, #2d0a0a, #3d1212);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px solid #8B0000;
+        }
+
+        .cipher-text {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3em;
+            letter-spacing: 2px;
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            color: #DC143C;
+            margin: 15px 0;
+            border: 1px dashed #DC143C;
+        }
+
+        .quiz-question {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quiz-option {
+            background: rgba(220,20,60,0.1);
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: rgba(220,20,60,0.2);
+            border-color: #DC143C;
+        }
+
+        .quiz-option.selected {
+            background: rgba(220,20,60,0.3);
+            border-color: #DC143C;
+        }
+
+        .final-accusation {
+            text-align: center;
+            background: linear-gradient(145deg, #2d0a0a, #4a1515);
+            padding: 35px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px solid #DC143C;
+            box-shadow: 0 0 35px rgba(220,20,60,0.4);
+        }
+
+        .birthday-message {
+            background: linear-gradient(45deg, #DC143C, #FF1E3C);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+            box-shadow: 0 12px 30px rgba(220,20,60,0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 12px 30px rgba(220,20,60,0.5); }
+            to { box-shadow: 0 12px 40px rgba(220,20,60,0.8); }
+        }
+
+        .stats-panel {
+            display: flex;
+            gap: 20px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(0,0,0,0.7);
+            padding: 10px 15px;
+            border-radius: 15px;
+            border: 2px solid #DC143C;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .timer {
+            font-size: 1.1em;
+            color: #DC143C;
+            font-weight: bold;
+        }
+
+        .score {
+            font-size: 1.1em;
+            color: #DC143C;
+            font-weight: bold;
+        }
+
+        .book-reference {
+            color: #cd5c5c;
+            font-style: italic;
+            font-size: 0.95em;
+            background: rgba(220,20,60,0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border-left: 3px solid #DC143C;
+        }
+
+        .hint-box {
+            background: rgba(139, 69, 19, 0.2);
+            border: 1px solid #8B4513;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .hint-box.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .hint-counter {
+            color: #8B4513;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 2px solid rgba(220,20,60,0.3);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-size: 1em;
+        }
+
+        input[type="text"]:focus {
+            border-color: #DC143C;
+            outline: none;
+            box-shadow: 0 0 10px rgba(220,20,60,0.3);
+        }
+
+        .difficulty-indicator {
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 10px 0;
+            border: 1px solid #DC143C;
+        }
+
+        .puzzle-complexity {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(139,0,0,0.1);
+            border-radius: 8px;
+            border-left: 4px solid #DC143C;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="stats-panel">
+            <div class="stat-box">
+                <div>Time</div>
+                <div class="timer" id="timer">00:00</div>
+            </div>
+            <div class="stat-box">
+                <div>Score</div>
+                <div class="score" id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div>Case</div>
+                <div class="score" id="caseNumber">1</div>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1 class="title">🔪 The BookTok Killer 📚</h1>
+            <p class="subtitle" id="caseTitle">A Dark Romance Birthday Mystery</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div class="game-screen active" id="screen1">
+            <div class="story-text" id="welcomeText">
+                Happy Birthday, Detective! Welcome to a mystery crafted just for you - someone who understands both the psychology of killers and the intoxicating world of dark romance.
+                <br><br>
+                A BookTok influencer has been found dead at an exclusive book signing event for dark romance authors. The victim, known for reviewing your favorite books, was discovered in the VIP lounge with a copy of "Haunting Adeline" beside them - the pages soaked in blood.
+                <br><br>
+                Four suspects remain at the scene, each connected to the books you've devoured. Your mission: use your knowledge of criminal psychology and dark romance tropes to unmask the killer.
+                <br><br>
+                <div class="difficulty-indicator">⚠️ DIFFICULTY: EXPERT LEVEL - This case requires deep psychological analysis</div>
+            </div>
+            <div class="birthday-message">
+                🎉 Happy Birthday to Our Favorite Psychological Profiler! 🎉
+                <div style="margin: 10px 0;">📖🔪💋</div>
+                May your special day be as thrilling as your darkest book obsessions!
+            </div>
+            <button class="btn" onclick="startGame()">Enter the Crime Scene</button>
+        </div>
+
+        <!-- Crime Scene -->
+        <div class="game-screen" id="screen2">
+            <div class="story-text" id="crimeSceneText">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            
+            <div class="psychological-profile">
+                <div class="profile-title">🔍 Crime Scene Analysis:</div>
+                <div id="evidenceList">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <button class="btn" onclick="nextScreen(3)">Profile the Suspects</button>
+        </div>
+
+        <!-- Suspects -->
+        <div class="game-screen" id="screen3">
+            <div class="story-text">
+                Four suspects remain, each embodying the dangerous archetypes you know so well from your favorite dark romances. Study their psychological profiles carefully - this killer is more cunning than you think:
+            </div>
+
+            <div class="suspects-grid" id="suspectsGrid">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <button class="btn" onclick="nextScreen(4)">Analyze the Evidence</button>
+        </div>
+
+        <!-- Complex Analysis Screen -->
+        <div class="game-screen" id="screen4">
+            <div class="story-text">
+                The killer has left behind a complex web of psychological and literary clues. This isn't your average BookTok murder - you're dealing with someone who understands both criminal psychology and your favorite genres intimately.
+            </div>
+
+            <div id="analysisContent">
+                <!-- Will be populated by JavaScript with different puzzle types -->
+            </div>
+
+            <div class="hint-box" id="hintBox">
+                <strong>💡 Hint <span id="hintNumber">1</span>:</strong>
+                <p id="hintText"></p>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="btn hint-btn" id="hintBtn" onclick="showHint()">
+                    Get Hint <span class="hint-counter" id="hintCounter">(3 remaining)</span>
+                </button>
+                <button class="btn" id="analyzeBtn" onclick="analyzeEvidence()" disabled>Complete Analysis</button>
+            </div>
+        </div>
+
+        <!-- Final Accusation -->
+        <div class="game-screen" id="screen5">
+            <div class="story-text" id="finalText">
+                The psychological pieces are falling into place. Like the best plot twists in your favorite dark romances, the truth is both shocking and inevitable. But be careful - this killer has studied you as much as you've studied them.
+            </div>
+
+            <div class="final-accusation">
+                <h3 style="color: #DC143C; margin-bottom: 25px;">Make Your Final Accusation</h3>
+                <p style="margin-bottom: 20px; color: #cd5c5c;">Remember: The most dangerous killers are those who understand their victims' psychology...</p>
+                <div class="suspects-grid" id="finalSuspects">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <button class="btn" id="accuseBtn" onclick="revealSolution()" disabled>Reveal the Truth</button>
+        </div>
+
+        <!-- Solution -->
+        <div class="game-screen" id="screen6">
+            <div class="story-text" id="solutionText">
+                <!-- Solution will be populated by JavaScript -->
+            </div>
+
+            <div class="birthday-message">
+                🎊 Case Closed! Happy Birthday, Master Profiler! 🎊
+                <div style="margin: 15px 0;">🕵️‍♀️📚💀🎂</div>
+                <div style="margin-top: 15px;">Your Final Score: <span id="finalScore">0</span>/100</div>
+                <div style="margin-top: 10px;">Completion Time: <span id="completionTime">00:00</span></div>
+                <div style="margin-top: 10px; font-size: 0.95em;" id="performanceMessage">
+                    <!-- Will be populated based on performance -->
+                </div>
+            </div>
+
+            <button class="btn" onclick="nextCase()">Solve Another Mystery</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state variables
+        let currentScreen = 1;
+        let score = 0;
+        let selectedSuspect = '';
+        let answers = {};
+        let startTime;
+        let timerInterval;
+        let hintsUsed = 0;
+        let maxHints = 3;
+        let currentCase = 1;
+
+        // Multiple mystery cases with different scenarios
+        const mysteryCases = [
+            {
+                title: "The BookTok Influencer Murder",
+                setting: "VIP book signing lounge",
+                victim: "BookTok influencer known for dark romance reviews",
+                weapon: "Custom book knife used for cutting pages",
+                keyBook: "Haunting Adeline",
+                evidence: [
+                    "Victim found clutching a signed copy of 'The Predator' by RuNyx",
+                    "Murder weapon: A custom book knife with engraved initials 'Z.M.' (Zade Meadows reference)",
+                    "A wine glass with lipstick marks - the same shade worn by three suspects",
+                    "A cipher hidden in the victim's bookmark collection",
+                    "The victim's phone shows they were about to expose someone's plagiarism"
+                ],
+                suspects: [
+                    { name: "Scarlett Huang", book: "Twisted Love", trait: "Narcissistic author with attachment issues", motive: "Bad review triggered narcissistic rage" },
+                    { name: "Dr. Adrian Morley", book: "The Love Hypothesis", trait: "Psychology professor studying criminal behavior", motive: "Victim discovered his unethical experiments" },
+                    { name: "Isabella Blackwood", book: "Haunting Adeline", trait: "Obsessive stalker with erotomania", motive: "Delusional romantic obsession with victim" },
+                    { name: "Vincent Romano", book: "The Sweetest Oblivion", trait: "Businessman with mafia connections", motive: "Victim exposed his money laundering operation" }
+                ],
+                killer: "Isabella Blackwood",
+                puzzleType: "cipher",
+                cipherText: "WKH ORYH WKDW NLOOV",
+                cipherKey: 3,
+                cipherAnswer: "THE LOVE THAT KILLS",
+                psychQuestion1: { question: "The intimate murder method suggests which psychological profile?", correct: "erotomania", options: ["erotomania", "narcissistic", "antisocial"] },
+                psychQuestion2: { question: "The staged crime scene indicates?", correct: "organized", options: ["organized", "disorganized", "mixed"] }
+            },
+            {
+                title: "The Academic Assassin",
+                setting: "University literature department",
+                victim: "Professor specializing in dark academia literature",
+                weapon: "Antique letter opener shaped like a quill",
+                keyBook: "The Secret History",
+                evidence: [
+                    "Victim found in locked office with 'If We Were Villains' open to chapter on betrayal",
+                    "Murder weapon: Antique letter opener with traces of aconite poison",
+                    "A cryptic message written in Latin on the blackboard",
+                    "Missing thesis papers on psychological manipulation in literature",
+                    "Security footage shows four people entering, but five leaving"
+                ],
+                suspects: [
+                    { name: "Professor Elena Voss", book: "The Seven Husbands of Evelyn Hugo", trait: "Ambitious academic with hidden past", motive: "Victim threatened to expose her falsified research" },
+                    { name: "Marcus Chen", book: "The Song of Achilles", trait: "Graduate student with obsessive personality", motive: "Victim rejected his thesis on psychopathic literary characters" },
+                    { name: "Dr. Thalia Grey", book: "Circe", trait: "Classics professor with knowledge of poisons", motive: "Departmental politics and funding disputes" },
+                    { name: "James Morrison", book: "The Picture of Dorian Gray", trait: "Art history professor with narcissistic tendencies", motive: "Victim discovered his affair with students" }
+                ],
+                killer: "Dr. Thalia Grey",
+                puzzleType: "latin",
+                latinText: "MORS TUA VITA MEA",
+                latinAnswer: "YOUR DEATH MY LIFE",
+                psychQuestion1: { question: "The use of aconite poison suggests knowledge from which field?", correct: "botany", options: ["botany", "chemistry", "medicine"] },
+                psychQuestion2: { question: "The Latin message indicates?", correct: "classical", options: ["classical", "medical", "religious"] }
+            },
+            {
+                title: "The Serial Reader Slayer",
+                setting: "Private book club gathering",
+                victim: "Host of exclusive dark psychology book club",
+                weapon: "Heavy first edition of 'Psychopathia Sexualis'",
+                keyBook: "American Psycho",
+                evidence: [
+                    "Victim found surrounded by books on serial killers: Dahmer, Bundy, Shipman",
+                    "Murder weapon: 1886 first edition 'Psychopathia Sexualis' with victim's blood",
+                    "A psychological assessment form filled out for each book club member",
+                    "Numerical code hidden in the book club's reading list",
+                    "Audio recording of the evening cut off mid-sentence during heated debate"
+                ],
+                suspects: [
+                    { name: "Dr. Sarah Blackthorne", book: "The Silence of the Lambs", trait: "Criminal psychologist with God complex", motive: "Victim questioned her controversial therapy methods" },
+                    { name: "Alex Rivera", book: "Mindhunter", trait: "True crime podcaster obsessed with killers", motive: "Victim refused to appear on podcast about Garavito case" },
+                    { name: "Catherine Mills", book: "In Cold Blood", trait: "Journalist researching unsolved murders", motive: "Victim had information about her father's 'suicide'" },
+                    { name: "Thomas Varden", book: "Helter Skelter", trait: "Retired FBI profiler with PTSD", motive: "Victim threatened to publish his classified case files" }
+                ],
+                killer: "Dr. Sarah Blackthorne",
+                puzzleType: "numerical",
+                numericalSequence: "8-1-18-15-12-4  19-8-9-16-13-1-14",
+                numericalAnswer: "HAROLD SHIPMAN",
+                psychQuestion1: { question: "The choice of 'Psychopathia Sexualis' as weapon suggests?", correct: "sexual", options: ["sexual", "academic", "random"] },
+                psychQuestion2: { question: "The psychological assessments indicate the killer has?", correct: "professional", options: ["professional", "amateur", "student"] }
+            }
+        ];
+
+        function startGame() {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+            nextScreen(2);
+        }
+
+        function updateTimer() {
+            const elapsed = Date.now() - startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function nextScreen(screenNum) {
+            document.getElementById(`screen${currentScreen}`).classList.remove('active');
+            currentScreen = screenNum;
+            
+            if (currentScreen === 2) {
+                setupCrimeScene();
+            } else if (currentScreen === 3) {
+                setupSuspects();
+            } else if (currentScreen === 4) {
+                setupAnalysis();
+            } else if (currentScreen === 5) {
+                setupFinalAccusation();
+            }
+            
+            document.getElementById(`screen${currentScreen}`).classList.add('active');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const progress = (currentScreen - 1) / 5 * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function setupCrimeScene() {
+            const case_data = mysteryCases[currentCase - 1];
+            document.getElementById('crimeSceneText').innerHTML = `
+                The ${case_data.setting} is eerily quiet. The metallic scent of blood mingles with the familiar smell of aged paper and leather bindings. This isn't a random act of violence - every detail has been carefully orchestrated by someone who understands both your psychology and your literary preferences.
+            `;
+            
+            const evidenceHTML = case_data.evidence.map(evidence => 
+                `<div class="evidence-item">• ${evidence}</div>`
+            ).join('');
+            
+            document.getElementById('evidenceList').innerHTML = evidenceHTML;
+        }
+
+        function setupSuspects() {
+            const case_data = mysteryCases[currentCase - 1];
+            const suspectsHTML = case_data.suspects.map(suspect => `
+                <div class="suspect-card">
+                    <div class="suspect-name">${suspect.name}</div>
+                    <div class="suspect-book">Inspired by "${suspect.book}"</div>
+                    <div>${suspect.trait}. ${suspect.motive}. Each alibi seems carefully constructed...</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('suspectsGrid').innerHTML = suspectsHTML;
+        }
+
+        function setupAnalysis() {
+            const case_data = mysteryCases[currentCase - 1];
+            let analysisHTML = '';
+
+            if (case_data.puzzleType === 'cipher') {
+                analysisHTML = `
+                    <div class="cipher-puzzle">
+                        <div class="profile-title">🔐 Encrypted Message Found at Crime Scene:</div>
+                        <div class="puzzle-complexity">
+                            <strong>⚠️ COMPLEXITY LEVEL: HIGH</strong><br>
+                            The killer left this Caesar cipher in the victim's bookmark. Each letter has been shifted by a specific number. You'll need to decode this to understand their motive.
+                        </div>
+                        <div class="cipher-text">${case_data.cipherText}</div>
+                        <input type="text" id="puzzleInput" placeholder="Enter the decoded message..." maxlength="50">
+                        <div style="margin-top: 15px;">
+                            <label>Shift value (1-25): </label>
+                            <input type="number" id="shiftInput" min="1" max="25" style="width: 80px; margin-left: 10px;">
+                        </div>
+                    </div>
+                    <div class="psychology-quiz">
+                        <div class="profile-title">🧠 Advanced Psychological Analysis:</div>
+                        <div class="quiz-question">
+                            <strong>Analysis 1:</strong> ${case_data.psychQuestion1.question}
+                            <div class="quiz-options">
+                                ${case_data.psychQuestion1.options.map(option => 
+                                    `<div class="quiz-option" onclick="selectOption(this, 'psych1', '${option}')">${option.charAt(0).toUpperCase() + option.slice(1)} killer profile</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="quiz-question">
+                            <strong>Analysis 2:</strong> ${case_data.psychQuestion2.question}
+                            <div class="quiz-options">
+                                ${case_data.psychQuestion2.options.map(option => 
+                                    `<div class="quiz-option" onclick="selectOption(this, 'psych2', '${option}')">${option.charAt(0).toUpperCase() + option.slice(1)} crime scene</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (case_data.puzzleType === 'latin') {
+                analysisHTML = `
+                    <div class="cipher-puzzle">
+                        <div class="profile-title">🏛️ Classical Message Found:</div>
+                        <div class="puzzle-complexity">
+                            <strong>⚠️ COMPLEXITY LEVEL: EXPERT</strong><br>
+                            This Latin phrase was written on the blackboard in the victim's blood. The killer has classical education - this is a direct threat and confession.
+                        </div>
+                        <div class="cipher-text">${case_data.latinText}</div>
+                        <input type="text" id="puzzleInput" placeholder="Enter the English translation..." maxlength="50">
+                        <div class="book-reference">
+                            <strong>Literary Context:</strong> This phrase appears in several classical works and has been used by historical poisoners. Consider the weapon choice...
+                        </div>
+                    </div>
+                    <div class="psychology-quiz">
+                        <div class="profile-title">🧠 Advanced Psychological Analysis:</div>
+                        <div class="quiz-question">
+                            <strong>Analysis 1:</strong> ${case_data.psychQuestion1.question}
+                            <div class="quiz-options">
+                                ${case_data.psychQuestion1.options.map(option => 
+                                    `<div class="quiz-option" onclick="selectOption(this, 'psych1', '${option}')">${option.charAt(0).toUpperCase() + option.slice(1)} expertise</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="quiz-question">
+                            <strong>Analysis 2:</strong> ${case_data.psychQuestion2.question}
+                            <div class="quiz-options">
+                                ${case_data.psychQuestion2.options.map(option => 
+                                    `<div class="quiz-option" onclick="selectOption(this, 'psych2', '${option}')">${option.charAt(0).toUpperCase() + option.slice(1)} education background</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (case_data.puzzleType === 'numerical') {
+                analysisHTML = `
+                    <div class="cipher-puzzle">
+                        <div class="profile-title">🔢 Numerical Code Discovered:</div>
+                        <div class="puzzle-complexity">
+                            <strong>⚠️ COMPLEXITY LEVEL: MASTER</strong><br>
+                            Found in the victim's reading list, each number corresponds to a letter's position in the alphabet. The decoded message reveals the killer's obsession with a specific serial killer you've studied.
+                        </div>
+                        <div class="cipher-text">${case_data.numericalSequence}</div>
+                        <input type="text" id="puzzleInput" placeholder="Enter the decoded name..." maxlength="30">
+                        <div class="book-reference">
+                            <strong>Serial Killer Context:</strong> This killer was known for his method of using medical authority to kill patients. The choice to reference him is significant to the motive.
+                        </div>
+                    </div>
+                    <div class="psychology-quiz">
+                        <div class="profile-title">🧠 Advanced Psychological Analysis:</div>
+                        <div class="quiz-question">
+                            <strong>Analysis 1:</strong> ${case_data.psychQuestion1.question}
+                            <div class="quiz-options">
+                                ${case_data.psychQuestion1.options.map(option => 
+                                    `<div class="quiz-option" onclick="selectOption(this, 'psych1', '${option}')">${option.charAt(0).toUpperCase() + option.slice(1)} motivation</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="quiz-question">
+                            <strong>Analysis 2:</strong> ${case_data.psychQuestion2.question}
+                            <div class="quiz-options">
+                                ${case_data.psychQuestion2.options.map(option => 
+                                    `<div class="quiz-option" onclick="selectOption(this, 'psych2', '${option}')">${option.charAt(0).toUpperCase() + option.slice(1)} knowledge level</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const analysisContent = document.getElementById('analysisContent');
+            if (analysisContent) {
+                analysisContent.innerHTML = analysisHTML;
+            }
+            
+            // Reset hint system for new case
+            hintsUsed = 0;
+            const hintCounterElement = document.getElementById('hintCounter');
+            const hintBtnElement = document.getElementById('hintBtn');
+            const hintBoxElement = document.getElementById('hintBox');
+            
+            if (hintCounterElement) hintCounterElement.textContent = `(${maxHints} remaining)`;
+            if (hintBtnElement) hintBtnElement.disabled = false;
+            if (hintBoxElement) hintBoxElement.classList.remove('show');
+        }
+
+        function setupFinalAccusation() {
+            const case_data = mysteryCases[currentCase - 1];
+            const finalSuspectsHTML = case_data.suspects.map(suspect => `
+                <div class="suspect-card" onclick="selectFinalSuspect(this, '${suspect.name}')">
+                    <div class="suspect-name">${suspect.name}</div>
+                    <div class="suspect-book">${suspect.trait.split('.')[0]}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('finalSuspects').innerHTML = finalSuspectsHTML;
+        }
+
+        function selectOption(element, question, answer) {
+            const questionDiv = element.parentNode;
+            const options = questionDiv.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            element.classList.add('selected');
+            answers[question] = answer;
+            checkAnalysisCompletion();
+        }
+
+        function checkAnalysisCompletion() {
+            const case_data = mysteryCases[currentCase - 1];
+            let puzzleComplete = false;
+            let psychComplete = Object.keys(answers).length >= 2;
+
+            // Use unified puzzleInput for all puzzle types
+            const puzzleInput = document.getElementById('puzzleInput');
+            const shiftInput = document.getElementById('shiftInput');
+            
+            if (case_data.puzzleType === 'cipher') {
+                if (puzzleInput && shiftInput) {
+                    const puzzleValue = puzzleInput.value.toUpperCase();
+                    puzzleComplete = puzzleValue.includes(case_data.cipherAnswer) || 
+                                   (puzzleValue.length > 5 && shiftInput.value == case_data.cipherKey);
+                }
+            } else if (case_data.puzzleType === 'latin') {
+                if (puzzleInput) {
+                    const value = puzzleInput.value.toUpperCase();
+                    puzzleComplete = value.includes(case_data.latinAnswer.split(' ')[0]) || 
+                                   value.includes('DEATH') || value.includes('LIFE');
+                }
+            } else if (case_data.puzzleType === 'numerical') {
+                if (puzzleInput) {
+                    const value = puzzleInput.value.toUpperCase();
+                    puzzleComplete = value.includes('HAROLD') || value.includes('SHIPMAN');
+                }
+            }
+
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            if (analyzeBtn) {
+                analyzeBtn.disabled = !(puzzleComplete && psychComplete);
+            }
+        }
+
+        function showHint() {
+            if (hintsUsed >= maxHints) return;
+            
+            const case_data = mysteryCases[currentCase - 1];
+            const hints = getHintsForCase(case_data);
+            
+            hintsUsed++;
+            const hintNumber = document.getElementById('hintNumber');
+            const hintText = document.getElementById('hintText');
+            const hintBox = document.getElementById('hintBox');
+            const hintCounter = document.getElementById('hintCounter');
+            const hintBtn = document.getElementById('hintBtn');
+            const scoreElement = document.getElementById('score');
+            
+            if (hintNumber) hintNumber.textContent = hintsUsed;
+            if (hintText) hintText.textContent = hints[hintsUsed - 1];
+            if (hintBox) hintBox.classList.add('show');
+            if (hintCounter) hintCounter.textContent = `(${maxHints - hintsUsed} remaining)`;
+            
+            if (hintsUsed >= maxHints && hintBtn) {
+                hintBtn.disabled = true;
+                hintBtn.textContent = 'No more hints';
+            }
+            
+            // Deduct points for using hints
+            score = Math.max(0, score - 5);
+            if (scoreElement) {
+                scoreElement.textContent = score;
+            }
+        }
+
+        function getHintsForCase(case_data) {
+            if (case_data.puzzleType === 'cipher') {
+                return [
+                    "Caesar ciphers shift each letter by the same amount. Try small numbers first - most ciphers use shifts of 1-5.",
+                    "The message relates to the motive. Think about obsessive love turning deadly - what phrase captures that?",
+                    "The shift is 3 positions forward in the alphabet. W becomes T, K becomes H, etc."
+                ];
+            } else if (case_data.puzzleType === 'latin') {
+                return [
+                    "This Latin phrase is about survival at someone else's expense. Think 'your' and 'my' and life/death concepts.",
+                    "The killer with classical knowledge used poison - this phrase justifies their action as necessary for their survival.",
+                    "Break it down: MORS = death, TUA = your, VITA = life, MEA = my. 'Your death, my life.'"
+                ];
+            } else if (case_data.puzzleType === 'numerical') {
+                return [
+                    "Each number represents a letter's position in the alphabet: A=1, B=2, C=3, etc. The dashes separate words.",
+                    "This references a British serial killer who was a doctor. He killed patients using medical authority.",
+                    "8=H, 1=A, 18=R, 15=O, 12=L, 4=D. The second word starts with 19=S, 8=H, 9=I, 16=P, 13=M, 1=A, 14=N."
+                ];
+            }
+            return ["No hints available for this puzzle type."];
+        }
+
+        function analyzeEvidence() {
+            const case_data = mysteryCases[currentCase - 1];
+            let points = 0;
+            
+            // Check psychological analysis
+            if (answers.psych1 === case_data.psychQuestion1.correct) points += 20;
+            if (answers.psych2 === case_data.psychQuestion2.correct) points += 20;
+            
+            // Check puzzle solution
+            let puzzleSolved = false;
+            if (case_data.puzzleType === 'cipher') {
+                const cipherInput = document.getElementById('cipherInput');
+                const shiftInput = document.getElementById('shiftInput');
+                if (cipherInput && shiftInput) {
+                    const cipherValue = cipherInput.value.toUpperCase();
+                    const shiftValue = shiftInput.value;
+                    if (cipherValue.includes(case_data.cipherAnswer) && shiftValue == case_data.cipherKey) {
+                        points += 30;
+                        puzzleSolved = true;
+                    } else if (cipherValue.includes(case_data.cipherAnswer) || shiftValue == case_data.cipherKey) {
+                        points += 15;
+                    }
+                }
+            } else if (case_data.puzzleType === 'latin') {
+                const latinInput = document.getElementById('latinInput');
+                if (latinInput) {
+                    const latinValue = latinInput.value.toUpperCase();
+                    if (latinValue.includes(case_data.latinAnswer)) {
+                        points += 30;
+                        puzzleSolved = true;
+                    } else if (latinValue.includes('DEATH') && latinValue.includes('LIFE')) {
+                        points += 15;
+                    }
+                }
+            } else if (case_data.puzzleType === 'numerical') {
+                const numericalInput = document.getElementById('numericalInput');
+                if (numericalInput) {
+                    const numericalValue = numericalInput.value.toUpperCase();
+                    if (numericalValue.includes(case_data.numericalAnswer)) {
+                        points += 30;
+                        puzzleSolved = true;
+                    } else if (numericalValue.includes('HAROLD') || numericalValue.includes('SHIPMAN')) {
+                        points += 15;
+                    }
+                }
+            }
+            
+            // Bonus for not using hints
+            if (hintsUsed === 0) points += 10;
+            
+            score += points;
+            const scoreElement = document.getElementById('score');
+            if (scoreElement) {
+                scoreElement.textContent = score;
+            }
+            
+            setTimeout(() => {
+                nextScreen(5);
+            }, 1000);
+        }
+
+        function selectFinalSuspect(card, suspect) {
+            const cards = document.querySelectorAll('#finalSuspects .suspect-card');
+            cards.forEach(c => c.classList.remove('selected'));
+            
+            card.classList.add('selected');
+            selectedSuspect = suspect;
+            
+            const accuseBtn = document.getElementById('accuseBtn');
+            if (accuseBtn) {
+                accuseBtn.disabled = false;
+            }
+        }
+
+        function revealSolution() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            const endTime = Date.now();
+            const totalTime = Math.floor((endTime - startTime) / 1000);
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            
+            const case_data = mysteryCases[currentCase - 1];
+            const correctSuspect = case_data.killer;
+            let solutionText = '';
+            let performanceMessage = '';
+            
+            if (selectedSuspect === correctSuspect) {
+                score += 30;
+                solutionText = `
+                    <div style="color: #90EE90; font-size: 1.4em; margin-bottom: 25px; text-shadow: 0 0 10px rgba(144,238,144,0.5);">🎉 MASTERFUL DEDUCTION! 🎉</div>
+                    
+                    <strong style="color: #DC143C;">Case ${currentCase} Solution:</strong><br><br>
+                    
+                    <strong>${correctSuspect}</strong> was indeed the killer! Your psychological profiling and puzzle-solving skills were exceptional.
+                    <br><br>
+                    
+                    <div class="book-reference"><strong>The Psychology:</strong><br>
+                    ${getSolutionExplanation(case_data)}</div>
+                    
+                    <div class="book-reference"><strong>The Literary Connection:</strong><br>
+                    ${getLiteraryExplanation(case_data)}</div>
+                    
+                    <div class="book-reference"><strong>The Criminal Method:</strong><br>
+                    ${getCriminalMethodExplanation(case_data)}</div>
+                    
+                    <strong>The Evidence Trail:</strong><br>
+                    ${getEvidenceExplanation(case_data)}
+                `;
+                
+                if (totalTime < 300 && hintsUsed === 0) {
+                    performanceMessage = "🏆 LEGENDARY PERFORMANCE! Lightning fast with perfect deduction!";
+                } else if (totalTime < 600 && hintsUsed <= 1) {
+                    performanceMessage = "⭐ EXCELLENT WORK! Your criminal psychology expertise shines!";
+                } else if (hintsUsed <= 2) {
+                    performanceMessage = "👏 SOLID DETECTIVE WORK! You've proven your analytical skills!";
+                } else {
+                    performanceMessage = "✅ CASE CLOSED! Even with hints, you got the killer!";
+                }
+            } else {
+                solutionText = `
+                    <div style="color: #FFB6C1; font-size: 1.3em; margin-bottom: 20px;">💔 The killer slipped through your fingers... 💔</div>
+                    
+                    <strong>You accused: ${selectedSuspect}</strong><br>
+                    <strong style="color: #DC143C;">The real killer: ${correctSuspect}</strong><br><br>
+                    
+                    <div class="book-reference">${getIncorrectExplanation(case_data)}</div>
+                    
+                    <strong>The Real Solution:</strong><br>
+                    ${getSolutionExplanation(case_data)}
+                    <br><br>
+                    
+                    <em style="color: #cd5c5c;">Even master profilers get cases wrong sometimes. The most dangerous killers are often the ones who understand psychology as well as you do...</em>
+                `;
+                
+                performanceMessage = "🎯 Learning is part of the process! Try the next case to redeem yourself!";
+            }
+            
+            const solutionTextElement = document.getElementById('solutionText');
+            const finalScoreElement = document.getElementById('finalScore');
+            const completionTimeElement = document.getElementById('completionTime');
+            const performanceMessageElement = document.getElementById('performanceMessage');
+            
+            if (solutionTextElement) solutionTextElement.innerHTML = solutionText;
+            if (finalScoreElement) finalScoreElement.textContent = score;
+            if (completionTimeElement) {
+                completionTimeElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            if (performanceMessageElement) performanceMessageElement.textContent = performanceMessage;
+            
+            nextScreen(6);
+        }
+
+        function getSolutionExplanation(case_data) {
+            const explanations = {
+                "Isabella Blackwood": "Isabella exhibited classic erotomania - delusional belief that the victim loved her despite public rejection. Her stalking escalated to violence when the victim continued to ignore her 'romantic' overtures.",
+                "Dr. Thalia Grey": "Dr. Grey's expertise in classical literature and botany made her the perfect candidate to use aconite poison. Her academic rivalry and knowledge of historical poisoning methods were the key indicators.",
+                "Dr. Sarah Blackthorne": "Dr. Blackthorne's God complex as a criminal psychologist led her to see herself above moral constraints. When questioned about her methods, she eliminated the threat with calculated precision."
+            };
+            return explanations[case_data.killer] || "Complex psychological motivations drove this killer to murder.";
+        }
+
+        function getLiteraryExplanation(case_data) {
+            const explanations = {
+                "Isabella Blackwood": "Like Zade from 'Haunting Adeline,' Isabella romanticized stalking behavior. But unlike fiction, real stalkers are genuinely dangerous when their delusions are challenged.",
+                "Dr. Thalia Grey": "The choice of aconite poison mirrors classical literature where scholars used their knowledge for murder. The Latin message was both confession and justification.",
+                "Dr. Sarah Blackthorne": "Her choice of 'Psychopathia Sexualis' as a weapon was deeply symbolic - using the foundational text of criminal psychology to commit the perfect psychological crime."
+            };
+            return explanations[case_data.killer] || "The literary elements were carefully chosen to reflect the killer's mindset.";
+        }
+
+        function getCriminalMethodExplanation(case_data) {
+            const methods = {
+                "Isabella Blackwood": "The intimate nature of the attack (book knife) and staged crime scene showed personal emotional investment. Classic stalker escalation pattern from harassment to violence.",
+                "Dr. Thalia Grey": "Poisoning is often called 'the woman's weapon' - requires planning, access to materials, and appears less violent. The locked room was meant to delay discovery.",
+                "Dr. Sarah Blackthorne": "Using her professional knowledge to create the perfect psychological crime scene. The assessments were her way of studying potential victims and suspects."
+            };
+            return methods[case_data.killer] || "The method revealed key aspects of the killer's psychology and background.";
+        }
+
+        function getEvidenceExplanation(case_data) {
+            const evidence = {
+                "Isabella Blackwood": "The 'Z.M.' initials on the knife were her tribute to Zade Meadows. Her live-stream alibi was pre-recorded - she used her tech skills to create false timestamps.",
+                "Dr. Thalia Grey": "The missing thesis papers contained her research on historical poisons. The Latin phrase was her academic signature - pride in her classical education even in murder.",
+                "Dr. Sarah Blackthorne": "The psychological assessments were her research notes on each potential victim. She selected this victim because they posed the greatest threat to her reputation."
+            };
+            return evidence[case_data.killer] || "All evidence pointed to someone with specific knowledge and access.";
+        }
+
+        function getIncorrectExplanation(case_data) {
+            return `Your psychological analysis was solid, but you may have been influenced by obvious motives rather than subtle behavioral patterns. The real killer was hiding in plain sight, using their professional expertise to deflect suspicion.`;
+        }
+
+        function nextCase() {
+            // Reset for next case
+            currentCase = (currentCase % mysteryCases.length) + 1;
+            currentScreen = 1;
+            score = 0;
+            selectedSuspect = '';
+            answers = {};
+            hintsUsed = 0;
+            
+            // Clear timer if running
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // Update case information
+            const caseNumberElement = document.getElementById('caseNumber');
+            const caseTitleElement = document.getElementById('caseTitle');
+            const scoreElement = document.getElementById('score');
+            const timerElement = document.getElementById('timer');
+            const progressBarElement = document.getElementById('progressBar');
+            
+            if (caseNumberElement) caseNumberElement.textContent = currentCase;
+            if (caseTitleElement) caseTitleElement.textContent = mysteryCases[currentCase - 1].title;
+            if (scoreElement) scoreElement.textContent = '0';
+            if (timerElement) timerElement.textContent = '00:00';
+            if (progressBarElement) progressBarElement.style.width = '0%';
+            
+            // Reset hint system
+            const hintCounterElement = document.getElementById('hintCounter');
+            const hintBtnElement = document.getElementById('hintBtn');
+            const hintBoxElement = document.getElementById('hintBox');
+            const analyzeBtnElement = document.getElementById('analyzeBtn');
+            const accuseBtnElement = document.getElementById('accuseBtn');
+            
+            if (hintCounterElement) hintCounterElement.textContent = `(${maxHints} remaining)`;
+            if (hintBtnElement) {
+                hintBtnElement.disabled = false;
+                hintBtnElement.textContent = 'Get Hint';
+            }
+            if (hintBoxElement) hintBoxElement.classList.remove('show');
+            if (analyzeBtnElement) analyzeBtnElement.disabled = true;
+            if (accuseBtnElement) accuseBtnElement.disabled = true;
+            
+            // Clear all selections
+            document.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.suspect-card').forEach(c => c.classList.remove('selected'));
+            
+            // Clear inputs
+            const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+            inputs.forEach(input => input.value = '');
+            
+            // Update welcome screen for new case
+            const case_data = mysteryCases[currentCase - 1];
+            const welcomeTextElement = document.getElementById('welcomeText');
+            if (welcomeTextElement) {
+                welcomeTextElement.innerHTML = `
+                    Welcome back, Detective! Ready for Case ${currentCase}?
+                    <br><br>
+                    ${case_data.title.toUpperCase()}
+                    <br><br>
+                    A ${case_data.victim} has been murdered at a ${case_data.setting}. The victim was found with "${case_data.keyBook}" nearby - but this case is far more complex than your previous investigations.
+                    <br><br>
+                    The killer has studied your methods and is deliberately challenging your expertise in both criminal psychology and dark literature. Each case grows more sophisticated...
+                    <br><br>
+                    <div class="difficulty-indicator">⚠️ DIFFICULTY: ${currentCase === 1 ? 'EXPERT' : currentCase === 2 ? 'MASTER' : 'LEGENDARY'} LEVEL - Advanced psychological profiling required</div>
+                `;
+            }
+            
+            // Show welcome screen
+            document.querySelectorAll('.game-screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById('screen1').classList.add('active');
+        }
+
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', function() {
+            const caseNumberElement = document.getElementById('caseNumber');
+            const caseTitleElement = document.getElementById('caseTitle');
+            
+            if (caseNumberElement) caseNumberElement.textContent = currentCase;
+            if (caseTitleElement) caseTitleElement.textContent = mysteryCases[currentCase - 1].title;
+        });
+
+        // Add event listeners for input validation
+        document.addEventListener('input', function(e) {
+            if (e.target.type === 'text' || e.target.type === 'number') {
+                setTimeout(checkAnalysisCompletion, 100); // Small delay to ensure value is updated
+            }
+        });
+    </script>
+</body>
+</html>
